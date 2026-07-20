@@ -9,12 +9,11 @@ This repository hosts the interactive, self-contained HTML version of the **Chat
 
 > 📄 **Live version:** https://<your-username>.github.io/<repo-name>/  
 > *(enable GitHub Pages on the `main` branch to activate this link)*
-
 ---
 
 ## About this artifact
 
-SIGCSE Virtual does not host supplementary material, so this repository is the canonical home for the **full CB categorization guidelines** referenced in the paper (Table 1: *"Full guidelines with examples available at …"*). The interactive companion provides:
+This repository is the canonical home for the **full CB categorization guidelines** referenced in the paper (Table 1: *"Full guidelines with examples available at …"*). The interactive companion provides:
 
 - An overview of the Chat-Bloom taxonomy, including the offloading-score figure (+6 *Create* → −2 *Redirect*).
 - A quick-reference table (adapted from the paper's Table 1) for rapid scanning of all nine categories.
@@ -31,7 +30,6 @@ SIGCSE Virtual does not host supplementary material, so this repository is the c
 | `index.html` | The self-contained interactive guidelines (no external dependencies). |
 | `README.md` | This file. |
 | `LICENSE` | CC BY-NC-ND 4.0 license text. |
-| `figures/chat-bloom-taxonomy.png` | *(optional)* High-resolution taxonomy figure. |
 
 ---
 
