@@ -7,7 +7,7 @@ This repository hosts the interactive, self-contained HTML version of the **Chat
 > In *Proceedings of the 2nd ACM Virtual Global Computing Education Conference V.1 (SIGCSE Virtual 2026)*, November 12–15, 2026, Virtual Event, USA. ACM, New York, NY, USA, 7 pages.  
 > DOI: https://doi.org/10.1145/3795867.3830977
 
-> 📄 **Live version:** [https://<your-username>.github.io/<repo-name>/](https://github.com/Arcala-Research-Lab/cb)  
+> 📄 **Live version:** [https://<your-username>.github.io/<repo-name>/](https://github.com/Arcala-Research-Lab/cb/index.html)  
 ---
 
 ## About this artifact
