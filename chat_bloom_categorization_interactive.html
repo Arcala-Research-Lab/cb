@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat-Bloom Categorization Guidelines</title>
+<style>
+  :root{
+    --create:#e8443a; --evaluate:#ee7d2b; --analyze:#a68a2d; --apply:#3aa147;
+    --understand:#2f74c0; --remember:#6a2f9c; --answer:#9aa0a6; --clarify:#e6e000;
+    --redirect:#8fd3ef; --na:#c8ccd0;
+    --bg:#f5f6f8; --card:#ffffff; --ink:#1f2733; --muted:#5c6773; --line:#e2e6ec;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+       background:var(--bg);color:var(--ink);line-height:1.5;font-size:14px}
+  header.top{background:linear-gradient(135deg,#2f74c0,#6a2f9c);color:#fff;padding:22px 26px}
+  header.top h1{margin:0 0 6px;font-size:20px}
+  header.top .frame{font-size:13px;opacity:.96;max-width:820px;margin-bottom:8px}
+  header.top .frame em{color:#fff}
+  header.top .meta{font-size:12px;opacity:.9;max-width:820px}
+  header.top .meta a{color:#dCEBFF}
+  .layout{display:flex;align-items:flex-start;gap:0}
+  nav.side{position:sticky;top:0;align-self:flex-start;width:216px;flex:0 0 216px;
+           height:100vh;overflow:auto;background:var(--card);border-right:1px solid var(--line);padding:16px 12px}
+  nav.side h2{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:14px 8px 6px}
+  nav.side a{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;
+             color:var(--ink);text-decoration:none;font-size:13px}
+  nav.side a:hover{background:var(--bg)}
+  .dot{width:11px;height:11px;border-radius:3px;flex:0 0 11px}
+  main{flex:1;padding:22px 26px;min-width:0;max-width:1000px}
+  .controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;align-items:center}
+  .controls input{flex:1;min-width:200px;padding:9px 12px;border:1px solid var(--line);border-radius:8px;font-size:14px}
+  .btn{padding:8px 12px;border:1px solid var(--line);background:var(--card);border-radius:8px;cursor:pointer;font-size:13px}
+  .btn:hover{background:#eef1f5}
+  .btn.primary{background:#2f74c0;color:#fff;border-color:#2f74c0}
+  .btn.primary:hover{background:#295f9c}
+  section.intro{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:18px}
+  section.intro h2{margin-top:0;font-size:16px}
+  section.intro p{color:#33404f;margin:8px 0}
+  .pyramid{display:flex;flex-direction:column;align-items:center;gap:2px;margin:14px 0}
+  .prow{display:flex;align-items:center;gap:10px;font-size:12px}
+  .pbar{color:#fff;font-weight:600;text-align:center;border-radius:3px;padding:3px 0;font-size:11.5px}
+  .score{width:34px;color:var(--muted);font-size:11px}
+  details.cite{background:#f7f9fb;border:1px solid var(--line);border-radius:8px;padding:6px 12px;margin-top:12px}
+  details.cite summary{cursor:pointer;font-weight:600;font-size:13px;color:#2f74c0}
+  details.cite .ref{font-size:12.5px;color:#33404f;margin:10px 0}
+  details.cite pre.bib{background:#1e2530;color:#e6edf3;border-radius:6px;padding:10px;font-size:11.5px;overflow:auto;
+     font-family:"SF Mono",Menlo,Consolas,monospace;white-space:pre-wrap}
+
+  /* ---- Quick reference table (paper Table 1) ---- */
+  .qref{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:18px;overflow:auto}
+  .qref h3{margin:0 0 4px;font-size:15px}
+  .qref .cap{color:var(--muted);font-size:12px;margin-bottom:14px}
+  table.t1{border-collapse:collapse;width:100%;font-size:12.5px;min-width:640px}
+  table.t1 th,table.t1 td{border:1px solid var(--line);padding:8px 10px;vertical-align:top;text-align:left}
+  table.t1 th{background:#eef2f6;font-weight:700}
+  table.t1 td.cat{font-weight:700;white-space:nowrap}
+  table.t1 td.cat .cdot{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px;vertical-align:middle}
+  table.t1 ul{margin:0;padding-left:16px}
+  table.t1 li{margin:2px 0}
+
+  .card{background:var(--card);border:1px solid var(--line);border-left-width:6px;border-radius:10px;
+        margin-bottom:12px;overflow:hidden}
+  .card summary{list-style:none;cursor:pointer;padding:14px 16px;display:flex;align-items:center;gap:12px;user-select:none}
+  .card summary::-webkit-details-marker{display:none}
+  .card summary:hover{background:#fafbfc}
+  .cat-name{font-size:16px;font-weight:700}
+  .badge{font-size:11px;font-weight:600;color:#fff;padding:2px 8px;border-radius:20px}
+  .chev{margin-left:auto;color:var(--muted);transition:transform .2s}
+  details[open] .chev{transform:rotate(90deg)}
+  .body{padding:4px 16px 18px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:760px){.grid{grid-template-columns:1fr}nav.side{display:none}}
+  .col h4{margin:6px 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  .col.prompt h4{color:#2f74c0}
+  .col.resp h4{color:#c07b1f}
+  .col ul{margin:0 0 10px;padding-left:18px}
+  .col li{margin:3px 0;color:#33404f}
+  .ex{background:#f7f9fb;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12.5px;color:#3a4655;margin:6px 0}
+  .ex .lbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:3px}
+  pre{background:#1e2530;color:#e6edf3;border-radius:8px;padding:12px;overflow:auto;font-size:12px;
+      font-family:"SF Mono",Menlo,Consolas,monospace;line-height:1.45;margin:6px 0}
+  .quote{font-style:italic}
+  .nohit{display:none !important}
+  footer{color:var(--muted);font-size:12px;padding:16px 26px 30px;max-width:1000px}
+
+  /* ---- Print / PDF ---- */
+  @media print{
+    body{background:#fff;font-size:11px}
+    nav.side{display:none}
+    .controls{display:none}
+    header.top{background:#2f74c0 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    main{max-width:100%;padding:12px}
+    .card{break-inside:avoid;border-left-width:6px}
+    details .body{display:block !important}
+    .chev{display:none}
+    .card summary{background:#f2f2f2 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    pre,.ex,.pbar,table.t1 th{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    a{color:#000;text-decoration:none}
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>Chat-Bloom Categorization Guidelines &amp; Examples</h1>
+  <div class="frame">
+    Companion material for <em>Chat-Bloom: A Taxonomy for Classifying Cognitive Offloading in
+    Student-AI Interactions in CS Education</em> (SIGCSE Virtual 2026). University of California, Irvine.
+  </div>
+  <div class="meta">
+    Chao, Cho, Lu, McGrath, T. Yeh, Rios, E. Yeh, Ganesh &amp; T. Y. Yeh (2026) ·
+    DOI: <a href="https://doi.org/10.1145/3795867.3830977">10.1145/3795867.3830977</a> ·
+    License: CC BY-NC-ND 4.0 · Version 1.0
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="side">
+    <h2>Overview</h2>
+    <a href="#intro"><span class="dot" style="background:#6a2f9c"></span>Taxonomy &amp; Method</a>
+    <a href="#quickref"><span class="dot" style="background:#2f74c0"></span>Quick Reference (Table 1)</a>
+    <h2>Cognitive Offload</h2>
+    <a href="#Create"><span class="dot" style="background:var(--create)"></span>Create <small>(6)</small></a>
+    <a href="#Evaluate"><span class="dot" style="background:var(--evaluate)"></span>Evaluate <small>(5)</small></a>
+    <a href="#Analyze"><span class="dot" style="background:var(--analyze)"></span>Analyze <small>(4)</small></a>
+    <a href="#Apply"><span class="dot" style="background:var(--apply)"></span>Apply <small>(3)</small></a>
+    <a href="#Understand"><span class="dot" style="background:var(--understand)"></span>Understand <small>(2)</small></a>
+    <a href="#Remember"><span class="dot" style="background:var(--remember)"></span>Remember <small>(1)</small></a>
+    <h2>Boundary</h2>
+    <a href="#Answer"><span class="dot" style="background:var(--answer)"></span>Answer <small>(0)</small></a>
+    <h2>Cognitive Onload</h2>
+    <a href="#Clarify"><span class="dot" style="background:var(--clarify)"></span>Clarify <small>(-1)</small></a>
+    <a href="#Redirect"><span class="dot" style="background:var(--redirect)"></span>Redirect <small>(-2)</small></a>
+    <a href="#NA"><span class="dot" style="background:var(--na)"></span>N/A</a>
+  </nav>
+
+  <main>
+    <div class="controls">
+      <input id="search" type="text" placeholder="Search categories, definitions, or examples…">
+      <button class="btn" onclick="setAll(true)">Expand all</button>
+      <button class="btn" onclick="setAll(false)">Collapse all</button>
+      <button class="btn primary" onclick="window.print()">⬇ Download PDF</button>
+    </div>
+
+    <section class="intro" id="intro">
+      <h2>Chat-Bloom Taxonomy</h2>
+      <p>The Chat-Bloom (CB) taxonomy provides a structured framework for measuring cognitive offloading in
+      student-AI interactions by systematically classifying both student prompts and AI responses. Cognitive
+      offloading is the externalization of an internal cognitive process to reduce the mental effort required of
+      the individual. CB adopts all six levels of Revised Bloom's Taxonomy to represent ordered degrees of
+      offloading (higher = more cognitive work delegated to the AI), and adds three levels — <b>Answer</b>,
+      <b>Clarify</b>, <b>Redirect</b> — to capture cognitive <em>onloading</em>, where the AI increases rather
+      than reduces the student's cognitive engagement.</p>
+
+      <div class="pyramid">
+        <div class="prow"><span class="score">6</span><div class="pbar" style="background:var(--create);width:70px">Create</div></div>
+        <div class="prow"><span class="score">5</span><div class="pbar" style="background:var(--evaluate);width:110px">Evaluate</div></div>
+        <div class="prow"><span class="score">4</span><div class="pbar" style="background:var(--analyze);width:150px">Analyze</div></div>
+        <div class="prow"><span class="score">3</span><div class="pbar" style="background:var(--apply);width:190px">Apply</div></div>
+        <div class="prow"><span class="score">2</span><div class="pbar" style="background:var(--understand);width:230px">Understand</div></div>
+        <div class="prow"><span class="score">1</span><div class="pbar" style="background:var(--remember);width:270px">Remember</div></div>
+        <div class="prow"><span class="score">0</span><div class="pbar" style="background:var(--answer);width:270px;color:#333">Answer</div></div>
+        <div class="prow"><span class="score">-1</span><div class="pbar" style="background:var(--clarify);width:230px;color:#333">Clarify</div></div>
+        <div class="prow"><span class="score">-2</span><div class="pbar" style="background:var(--redirect);width:190px;color:#333">Redirect</div></div>
+      </div>
+
+      <p><b>How to categorize:</b> Classify user prompts and LLM responses in <em>separate passes</em> using their
+      distinct guideline sets — separating passes reduces context switching and improves consistency. Work within
+      each chat's context, focusing on the most recent exchange. When a prompt or response fits more than one CB
+      category, choose the one with the <b>highest magnitude score</b> (the higher level of cognitive impact).</p>
+
+      <details class="cite">
+        <summary>How to cite this work</summary>
+        <div class="ref">Leo Chao, Christiana Cho, Candice Lu, Mikayla McGrath, Troy Yeh, Misaki Rios, Ellie Yeh,
+        Sowmiyalakshmi Ganesh, and Thomas Y. Yeh. 2026. Chat-Bloom: A Taxonomy for Classifying Cognitive Offloading
+        in Student-AI Interactions in CS Education. In <em>Proceedings of the 2nd ACM Virtual Global Computing
+        Education Conference V.1 (SIGCSE Virtual 2026)</em>, November 12–15, 2026, Virtual Event, USA. ACM, New York,
+        NY, USA, 7 pages. https://doi.org/10.1145/3795867.3830977</div>
+        <pre class="bib">@inproceedings{chao2026chatbloom,
+  title     = {Chat-Bloom: A Taxonomy for Classifying Cognitive
+               Offloading in Student-AI Interactions in CS Education},
+  author    = {Chao, Leo and Cho, Christiana and Lu, Candice and
+               McGrath, Mikayla and Yeh, Troy and Rios, Misaki and
+               Yeh, Ellie and Ganesh, Sowmiyalakshmi and Yeh, Thomas Y.},
+  booktitle = {Proceedings of the 2nd ACM Virtual Global Computing
+               Education Conference V.1 (SIGCSE Virtual 2026)},
+  year      = {2026},
+  publisher = {ACM},
+  doi       = {10.1145/3795867.3830977}
+}</pre>
+      </details>
+    </section>
+
+    <!-- QUICK REFERENCE: PAPER TABLE 1 -->
+    <section class="qref" id="quickref">
+      <h3>Quick Reference — Abbreviated Guidelines (Paper Table 1)</h3>
+      <div class="cap">Scannable overview of all nine categories. See the detailed cards below for full definitions, edge cases, and examples.</div>
+      <table class="t1">
+        <thead><tr><th>Category</th><th>User Prompt — Requested Offloading</th><th>LLM Response — Provided Offloading</th></tr></thead>
+        <tbody>
+          <tr><td class="cat"><span class="cdot" style="background:var(--create)"></span>Create</td>
+            <td><ul><li>Requests solution or code generation for assignment.</li><li>Copy-pastes assignment/skeleton/stub without own work or question (one-shot).</li></ul></td>
+            <td><ul><li>Provides new code or solution directly applicable to the problem.</li><li>"Here's how to implement this", "Corrected version" with code.</li></ul></td></tr>
+          <tr><td class="cat"><span class="cdot" style="background:var(--evaluate)"></span>Evaluate</td>
+            <td><ul><li>Seeks critique of code/plan without a debug request.</li><li>Copy-pastes own generated code without prompt.</li></ul></td>
+            <td><ul><li>Feedback on user content against a spec.</li><li>Code-review-like: "You should use if instead of if-else".</li></ul></td></tr>
+          <tr><td class="cat"><span class="cdot" style="background:var(--analyze)"></span>Analyze</td>
+            <td><ul><li>Debugging help: "Why is this code not working?"</li><li>Copy-pastes error message.</li><li>Requests step-by-step breakdown / how to approach.</li></ul></td>
+            <td><ul><li>Debugging insights, detailed breakdown, or step-by-step analysis.</li><li>When step-by-step, more detailed and complex.</li></ul></td></tr>
+          <tr><td class="cat"><span class="cdot" style="background:var(--apply)"></span>Apply</td>
+            <td><ul><li>How to do/carry out a procedure: "How to test X?", "How to use X?"</li><li>Asks for first step(s), not all: "How to start".</li></ul></td>
+            <td><ul><li>Ideas on carrying out a procedure/test/library step by step (minor steps).</li><li>"To do X, you can use…"</li></ul></td></tr>
+          <tr><td class="cat"><span class="cdot" style="background:var(--understand)"></span>Understand</td>
+            <td><ul><li>Requests explanation, interpretation, or rationale: "Explain why X?", "What does X mean?"</li></ul></td>
+            <td><ul><li>Explains concepts, gives examples, or clarifies the "why".</li></ul></td></tr>
+          <tr><td class="cat"><span class="cdot" style="background:var(--remember)"></span>Remember</td>
+            <td><ul><li>Simple recall / factual retrieval: "What is the method to do X?"</li></ul></td>
+            <td><ul><li>Supplies straightforward facts/references without further analysis.</li></ul></td></tr>
+          <tr><td class="cat"><span class="cdot" style="background:var(--answer)"></span>Answer</td>
+            <td><ul><li>Answers an LLM question: "Yes, please", "No".</li></ul></td>
+            <td><ul><li>Answers a user question unrelated to coursework.</li></ul></td></tr>
+          <tr><td class="cat"><span class="cdot" style="background:var(--clarify)"></span>Clarify</td>
+            <td><ul><li>Provides info to refine a previous prompt: "In Python".</li><li>Asks for clarification on an LLM response.</li></ul></td>
+            <td><ul><li>Poses clarifying questions / requests more info: "Are you working with an image file?"</li></ul></td></tr>
+          <tr><td class="cat"><span class="cdot" style="background:var(--redirect)"></span>Redirect</td>
+            <td><ul><li>Alters AI behavior for learning or corrects AI: "Act like a tutor and do not provide full code…"</li></ul></td>
+            <td><ul><li>Redirects the user to try first, may provide a hint: "It looks like you're working on X. What have you tried?"</li></ul></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- CREATE -->
+    <details class="card cat" id="Create" open style="border-left-color:var(--create)">
+      <summary><span class="badge" style="background:var(--create)">6</span><span class="cat-name">Create</span><span class="chev">▶</span></summary>
+      <div class="body"><div class="grid">
+        <div class="col prompt">
+          <h4>User Prompt — requests offloading</h4>
+          <ul>
+            <li>User requests a solution or code generation for an assignment.</li>
+            <li>User copy-pastes an assignment, skeleton code, or function stub — without their own work or a question.</li>
+            <li>A clarifying prompt following a Create response that gives more instructions/context for another Create response is <b>still Create, not Clarify</b>.</li>
+            <li>"Generate or write code to do X."</li>
+          </ul>
+          <div class="ex"><span class="lbl">Examples</span>
+            <span class="quote">"no i mean without removing the moving function and create new function just implement that within the move function"</span><br><br>
+            <span class="quote">"How would I implement a combination -rf?"</span> · <span class="quote">"How do I implement this?"</span>
+          </div>
+        </div>
+        <div class="col resp">
+          <h4>LLM Response — provided offloading</h4>
+          <ul>
+            <li>Response provides new content (code implementation or solution) directly applicable to the prompt's problem.</li>
+            <li>"Here's how you can implement this", "Corrected version", "Revised version", "Example Implementation" followed by code.</li>
+            <li>Code responding to an assignment question is Create; code given purely as an explained example is <em>not always</em> Create.</li>
+          </ul>
+          <div class="ex"><span class="lbl">Example response</span>
+            To implement <code>read_host()</code>, use a loop that keeps asking for input until a valid host resolves:
+          </div>
+<pre>import socket
+
+def read_host() -&gt; str:
+    """
+    Asks user for the host name or IP address
+    until a valid one is provided.
+    Returns the valid host name / IP address.
+    """
+    while True:
+        host = input("Enter a host name or IP address: ")
+        try:
+            # Try to resolve the host name or IP address
+            socket.gethostbyname(host)
+            return host
+        except socket.error:
+            print("Invalid host name or IP address. Please try again.")
+
+# Example usage:
+# host = read_host()
+# print(f"Valid host: {host}")</pre>
+        </div>
+      </div></div>
+    </details>
+
+    <!-- EVALUATE -->
+    <details class="card cat" id="Evaluate" style="border-left-color:var(--evaluate)">
+      <summary><span class="badge" style="background:var(--evaluate)">5</span><span class="cat-name">Evaluate</span><span class="chev">▶</span></summary>
+      <div class="body"><div class="grid">
+        <div class="col prompt">
+          <h4>User Prompt</h4>
+          <ul>
+            <li>Prompt seeks a critique of code or a plan without a debug request. "Should I do X or Y?"</li>
+            <li>X or Y should involve higher complexity / higher-order thinking (e.g., "Is X or Y better time complexity?", "Which data structure is better here?").</li>
+            <li>User copy-pastes their own generated code without an additional prompt.</li>
+          </ul>
+          <div class="ex"><span class="lbl">Example</span><span class="quote">"wait hold on should i implement this structure in remove_notes() or should i implement it in a separate test_remove_note()"</span></div>
+        </div>
+        <div class="col resp">
+          <h4>LLM Response</h4>
+          <ul>
+            <li>Provides feedback on user code/solution against a spec: "Yes, this meets requirements" or "No, it fails X".</li>
+            <li>"Code-review"-esque response; only follows an Evaluate prompt.</li>
+            <li>Decision-making about design choices/options the user gave.</li>
+          </ul>
+          <div class="ex"><span class="lbl">Example response</span><span class="quote">"When checking for overlaps, you should use separate <code>if</code> statements rather than <code>if-elif</code> because you want to evaluate each condition independently… Using <code>if-elif</code> would stop checking further conditions once one is true, which isn't suitable here…"</span></div>
+        </div>
+      </div></div>
+    </details>
+
+    <!-- ANALYZE -->
+    <details class="card cat" id="Analyze" style="border-left-color:var(--analyze)">
+      <summary><span class="badge" style="background:var(--analyze)">4</span><span class="cat-name">Analyze</span><span class="chev">▶</span></summary>
+      <div class="body"><div class="grid">
+        <div class="col prompt">
+          <h4>User Prompt</h4>
+          <ul>
+            <li>Requests debugging help, with or without code: "Why is this code not working?", "Is this correct?" (in a debugging context).</li>
+            <li>User copy-pastes an error message.</li>
+            <li>Requests a step-by-step breakdown or how to approach a problem; breaking down conceptual questions.</li>
+            <li>Pushes the LLM to help more / move to the next step with no added context: "Help me", "Whats next", "I don't know what to do next".</li>
+          </ul>
+          <div class="ex"><span class="lbl">Example</span><span class="quote">"am I building this URL correctly? params = {"key": NASA_API_KEY, "start_date": start_date, "end_date": end_date} url = BASE_NASA_URL + "?" + urllib.parse.urlencode(params)"</span></div>
+        </div>
+        <div class="col resp">
+          <h4>LLM Response</h4>
+          <ul>
+            <li>Offers debugging insights, a detailed breakdown, or step-by-step analysis for approaching a problem.</li>
+            <li>When step-by-step, response is more in-depth, detailed, and complex — the steps are bigger and more cognitively demanding.</li>
+          </ul>
+          <div class="ex"><span class="lbl">Example response (excerpt)</span>
+            "Here are the steps to implement <code>read_host()</code>: 1. Initialize a loop… 2. Prompt for input… 3. Try to resolve the input with <code>socket.gethostbyname()</code>… 4. Check for exceptions… 5. Handle invalid input… 6. Return the valid input."</div>
+        </div>
+      </div></div>
+    </details>
+
+    <!-- APPLY -->
+    <details class="card cat" id="Apply" style="border-left-color:var(--apply)">
+      <summary><span class="badge" style="background:var(--apply)">3</span><span class="cat-name">Apply</span><span class="chev">▶</span></summary>
+      <div class="body"><div class="grid">
+        <div class="col prompt">
+          <h4>User Prompt</h4>
+          <ul>
+            <li>Seeks how to do something specific / carry out a procedure: "How to test X?", "How to do X?", "How to use X?"</li>
+            <li>Emphasizes applying known concepts to new scenarios.</li>
+            <li>Asks for the first step(s), not all steps: "How to start…", "What should I do first?"</li>
+          </ul>
+          <div class="ex"><span class="lbl">Examples</span><span class="quote">"how do you remove an item from a dictionary"</span><br><span class="quote">"I do not know the PNG signature and would like a hint on how to read the beginning of a file to check the signature"</span></div>
+        </div>
+        <div class="col resp">
+          <h4>LLM Response</h4>
+          <ul>
+            <li>Provides ideas on how to carry out a procedure, test a function, or use a library step by step.</li>
+            <li>Guidance on how to do X; minor steps. When step-by-step, the response is vaguer, less detailed, not very complex.</li>
+          </ul>
+          <div class="ex"><span class="lbl">Example response</span><span class="quote">"To remove an item from a dictionary, you can use the <code>del</code> statement or the <code>pop()</code> method… Is there a specific method you'd like to know more about, or a particular scenario in mind?"</span></div>
+        </div>
+      </div></div>
+    </details>
+
+    <!-- UNDERSTAND -->
+    <details class="card cat" id="Understand" style="border-left-color:var(--understand)">
+      <summary><span class="badge" style="background:var(--understand)">2</span><span class="cat-name">Understand</span><span class="chev">▶</span></summary>
+      <div class="body"><div class="grid">
+        <div class="col prompt">
+          <h4>User Prompt</h4>
+          <ul>
+            <li>Requests an explanation or interpretation: "Explain why we do X?", "What does X mean?"</li>
+            <li>Requests examples or rationale: "Can you give an example?", "Simple example".</li>
+            <li>Clarifying their understanding: "Should I do this?"</li>
+          </ul>
+          <div class="ex"><span class="lbl">Example</span><span class="quote">"what is the main cost of using recursive function"</span></div>
+        </div>
+        <div class="col resp">
+          <h4>LLM Response</h4>
+          <ul>
+            <li>Explains concepts, provides examples, or clarifies the "why" behind a solution.</li>
+            <li>Lower-level / shorter examples (including multiple small examples) fit here.</li>
+            <li>No steps are provided.</li>
+          </ul>
+          <div class="ex"><span class="lbl">Example response</span><span class="quote">"The main cost of using a recursive function is often related to memory and performance. Each recursive call adds a new layer to the call stack… recursion can simplify code for problems that naturally fit a recursive approach, like tree traversals…"</span></div>
+        </div>
+      </div></div>
+    </details>
+
+    <!-- REMEMBER -->
+    <details class="card cat" id="Remember" style="border-left-color:var(--remember)">
+      <summary><span class="badge" style="background:var(--remember)">1</span><span class="cat-name">Remember</span><span class="chev">▶</span></summary>
+      <div class="body"><div class="grid">
+        <div class="col prompt">
+          <h4>User Prompt</h4>
+          <ul>
+            <li>Seeks simple recall or factual retrieval: "What is the method to do X?"</li>
+            <li>Low-level "how to" questions: "How to navigate", "How to splice a string", "How to define a function".</li>
+          </ul>
+          <div class="ex"><span class="lbl">Examples</span><span class="quote">"what does 'a' mean when open file"</span> · <span class="quote">"What's the syntax for using sorted()?"</span> · <span class="quote">"is makefile a method?"</span> · <span class="quote">"what does len([dictionary]) do"</span></div>
+        </div>
+        <div class="col resp">
+          <h4>LLM Response</h4>
+          <ul>
+            <li>Supplies straightforward facts or references without further explanation or analysis.</li>
+          </ul>
+          <div class="ex"><span class="lbl">Example response</span><span class="quote">"Yes, you can add two lists in Python using the <code>+</code> operator. This will concatenate the two lists… If you have more questions, feel free to ask!"</span></div>
+        </div>
+      </div></div>
+    </details>
+
+    <!-- ANSWER -->
+    <details class="card cat" id="Answer" style="border-left-color:var(--answer)">
+      <summary><span class="badge" style="background:var(--answer);color:#333">0</span><span class="cat-name">Answer</span><span class="chev">▶</span></summary>
+      <div class="body"><div class="grid">
+        <div class="col prompt">
+          <h4>User Prompt</h4>
+          <ul>
+            <li>Answers an LLM question to provide more context — course-relevant or a short answer to an AI question.</li>
+          </ul>
+          <div class="ex"><span class="lbl">Examples</span><span class="quote">"Yes please"</span> · <span class="quote">"No"</span> · <span class="quote">"no idea, should i import those in? i think it should be simple in order to test it though.."</span> · <span class="quote">"I don't know"</span></div>
+        </div>
+        <div class="col resp">
+          <h4>LLM Response</h4>
+          <ul>
+            <li>Answers a user question unrelated to coursework.</li>
+          </ul>
+          <div class="ex"><span class="lbl">Example response</span><span class="quote">"You're welcome! I'm glad to hear that it worked. If you have any more questions or need further assistance, feel free to ask. Happy coding!"</span></div>
+        </div>
+      </div></div>
+    </details>
+
+    <!-- CLARIFY -->
+    <details class="card cat" id="Clarify" style="border-left-color:var(--clarify)">
+      <summary><span class="badge" style="background:var(--clarify);color:#333">-1</span><span class="cat-name">Clarify</span><span class="chev">▶</span></summary>
+      <div class="body"><div class="grid">
+        <div class="col prompt">
+          <h4>User Prompt</h4>
+          <ul>
+            <li>Provides additional context to refine/adjust a previous prompt (message isn't very clear by itself).</li>
+            <li>Asks for clarification in response to an LLM response.</li>
+            <li><b>Note:</b> if the user is clarifying their previous prompt to add context, take the previous prompt's level (e.g., "In Python").</li>
+          </ul>
+          <div class="ex"><span class="lbl">Examples</span><span class="quote">"no, i want it to simply show 'ValueError' after the user enters all their inputs (operands and operation)."</span> · <span class="quote">"without making a new function"</span> · <span class="quote">"sorry i meant only the last 4 characters"</span></div>
+        </div>
+        <div class="col resp">
+          <h4>LLM Response</h4>
+          <ul>
+            <li>Poses clarifying questions or requests more information from the user.</li>
+          </ul>
+          <div class="ex"><span class="lbl">Example response</span><span class="quote">"Mirroring an image is an interesting task! … Are you working with an image file, or are you representing the image as a 2D list in Python? Understanding how you're currently handling the image will help me guide you better."</span></div>
+        </div>
+      </div></div>
+    </details>
+
+    <!-- REDIRECT -->
+    <details class="card cat" id="Redirect" style="border-left-color:var(--redirect)">
+      <summary><span class="badge" style="background:var(--redirect);color:#333">-2</span><span class="cat-name">Redirect</span><span class="chev">▶</span></summary>
+      <div class="body"><div class="grid">
+        <div class="col prompt">
+          <h4>User Prompt</h4>
+          <ul>
+            <li>Tries to alter LLM behavior for deeper learning: "Act like a tutor and do not provide full code", "Teach me how you did this as a beginner".</li>
+            <li>May be both clarifying + redirecting — take <b>Redirect over Clarify</b>.</li>
+          </ul>
+          <div class="ex"><span class="lbl">Examples</span><span class="quote">"i don't want the code"</span> · <span class="quote">"pls dont give me the solution, just guide/help me thru it"</span> · <span class="quote">"can you help me with this function (without giving me the solution)? just guide me, give me tips."</span></div>
+        </div>
+        <div class="col resp">
+          <h4>LLM Response</h4>
+          <ul>
+            <li>Declines a direct solution and redirects the user to try first; provides hints instead of answering directly.</li>
+            <li>"It looks like you're working on X. If you have any questions about Y, feel free to ask."</li>
+          </ul>
+          <div class="ex"><span class="lbl">Example response</span><span class="quote">"Hi there! It looks like you're working on a file system explorer project. How can I assist you with understanding object-oriented programming or inheritance concepts related to your project?…"</span></div>
+        </div>
+      </div></div>
+    </details>
+
+    <!-- N/A -->
+    <details class="card cat" id="NA" style="border-left-color:var(--na)">
+      <summary><span class="badge" style="background:var(--na);color:#333">N/A</span><span class="cat-name">N/A</span><span class="chev">▶</span></summary>
+      <div class="body"><div class="grid">
+        <div class="col prompt">
+          <h4>User Prompt</h4>
+          <ul>
+            <li>User sends a message unrelated to class: "Y", "Hello".</li>
+          </ul>
+          <div class="ex"><span class="lbl">Examples</span><span class="quote">"Testing"</span> · <span class="quote">"Hi"</span> · <span class="quote">"who made you"</span></div>
+        </div>
+        <div class="col resp">
+          <h4>LLM Response</h4>
+          <ul>
+            <li>Model response is off-topic and not answering a user question.</li>
+          </ul>
+          <div class="ex"><span class="lbl">Example response</span><span class="quote">"Hello! How can I assist you today?"</span></div>
+        </div>
+      </div>
+      <p style="color:var(--muted);font-size:12.5px;margin:0">Note: N/A is an implementation-level label for off-topic messages; it is excluded from the taxonomy proper reported in the paper's Table 1.</p></div>
+    </details>
+
+  </main>
+</div>
+
+<footer>
+  Interactive companion for the Chat-Bloom guidelines. Distribute as a single self-contained HTML file via GitHub / GitHub Pages,
+  and archive a Zenodo snapshot for a permanent DOI. The "Download PDF" button uses your browser's print-to-PDF (choose "Save as PDF").
+</footer>
+
+<script>
+  function setAll(open){document.querySelectorAll('details.cat').forEach(d=>d.open=open);}
+  const search=document.getElementById('search');
+  search.addEventListener('input',()=>{
+    const q=search.value.trim().toLowerCase();
+    document.querySelectorAll('details.cat').forEach(d=>{
+      const hit=q===''||d.textContent.toLowerCase().includes(q);
+      d.classList.toggle('nohit',!hit);
+      if(q!=='' && hit) d.open=true;
+    });
+  });
+</script>
+</body>
+</html>
