@@ -515,37 +515,15 @@ def read_host() -&gt; str:
   });
 </script>
 
-  <!-- Analytics and Metrics Suite -->
-<!-- Include CounterAPI's official browser client via CDN -->
-<script src="https://cdn.jsdelivr.net/npm/counterapi/dist/counter.browser.min.js"></script>
-
-<script>
-  async function initMetrics() {
-    try {
-      // 1. Initialize the Counter Client
-      // Replace 'sigcse2026-academic-paper' with your own custom unique word/name
-      const counter = new Counter({ workspace: 'sigcse2026-academic-paper' });
-
-      // 2. Trigger the live count up event
-      // This will increment the 'companion-views' metric by 1 on every fresh page visit
-      const result = await counter.up('companion-views');
-
-      // 3. Inject the real-time value into your footer text
-      document.getElementById('visit-count').innerText = Number(result.value).toLocaleString();
-      
-    } catch (e) {
-      console.error('Metrics sync fallback:', e);
-      // Keeps your layout clean if the client hits an adblocker/network issue
-      document.getElementById('visit-count').innerText = "1+"; 
-    }
-  }
-
-  // Execute the script securely once the HTML framework is fully parsed
-  window.addEventListener('DOMContentLoaded', initMetrics);
-</script>
-
-<!-- Keep your GoatCounter script below this line to handle your backend dossier graphs -->
-<script data-goatcounter="https://goatcounter.com" async src="//gc.zgo.at/count.js"></script>
+<!-- Fully Styled Academic Footer -->
+<footer style="margin-top: 50px; padding: 20px 0; border-top: 1px solid #e1e4e8; text-align: center; color: #586069; font-size: 13px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <p>© 2026 SIGCSE Virtual Paper Companion. All rights reserved.</p>
+  <div style="margin-top: 12px; display: inline-flex; align-items: center; gap: 8px;">
+    <span>Repository Traffic Tracker:</span>
+    <!-- Automatically tracks increments based on your distinct URL path -->
+    <img src="https://seeyoufarm.com" alt="Visitor Counter" style="vertical-align: middle;">
+  </div>
+</footer>
 
 </body>
 </html>
