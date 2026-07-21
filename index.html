@@ -516,23 +516,36 @@ def read_host() -&gt; str:
 </script>
 
   <!-- Analytics and Metrics Suite -->
-<script>
-  // 1. Public Counter Call
-  // Change "sigcse2026-paper" to your actual paper ID or unique name
-  const NAMESPACE = "sigcse2026-paper"; 
-  const KEY = "companion-views";
+<!-- Include CounterAPI's official browser client via CDN -->
+<script src="https://cdn.jsdelivr.net/npm/counterapi/dist/counter.browser.min.js"></script>
 
+<script>
   async function initMetrics() {
     try {
-      const response = await fetch(`https://counterapi.dev{NAMESPACE}/${KEY}/up`);
-      const data = await response.json();
-      document.getElementById('visit-count').innerText = data.count.toLocaleString();
+      // 1. Initialize the Counter Client
+      // Replace 'sigcse2026-academic-paper' with your own custom unique word/name
+      const counter = new Counter({ workspace: 'sigcse2026-academic-paper' });
+
+      // 2. Trigger the live count up event
+      // This will increment the 'companion-views' metric by 1 on every fresh page visit
+      const result = await counter.up('companion-views');
+
+      // 3. Inject the real-time value into your footer text
+      document.getElementById('visit-count').innerText = Number(result.value).toLocaleString();
+      
     } catch (e) {
-      console.error('Metrics timeout', e);
+      console.error('Metrics sync fallback:', e);
+      // Keeps your layout clean if the client hits an adblocker/network issue
       document.getElementById('visit-count').innerText = "1+"; 
     }
   }
+
+  // Execute the script securely once the HTML framework is fully parsed
   window.addEventListener('DOMContentLoaded', initMetrics);
 </script>
+
+<!-- Keep your GoatCounter script below this line to handle your backend dossier graphs -->
+<script data-goatcounter="https://goatcounter.com" async src="//gc.zgo.at/count.js"></script>
+
 </body>
 </html>
